@@ -1,0 +1,166 @@
+<cu-custom bgColor="bg-gradual-red">
+  <view slot="content">欧气抽奖</view>
+</cu-custom>
+
+<view wx:if="{{PageCur=='comm1'}}" style="text-align:center;padding:20rpx">
+  <view style="text-align:center;padding:20rpx">
+  <image src="/images/3111796.jpg"></image>
+  </view>
+  <view class="padding-xl radius shadow-warp bg-red margin-top"  bindtap="createLotte">发起抽奖</view>
+  <view class="padding-xl radius shadow-warp bg-red margin-top"  bindtap="join">参与抽奖</view>
+  </view>
+
+
+<view wx:if="{{PageCur=='comm2'}}">
+
+<view class="UCenter-bg " style="height:350rpx;text-align:center;padding:60rpx 0;background-color:#f33646">
+  <view class="cu-avatar xl round " style="margin:auto;background-image:url({{userInfo.avatarUrl}});" bindtap="reg"></view>
+  <view wx:if="{{!userInfo.nickName}}" class="text-xl" style="margin-top:10rpx">
+    <button class="cu-btn round" open-type='getUserInfo' data-flag='login' bindgetuserinfo="login2">登录/注册</button>
+  </view>
+  <view wx:else class="text-xl text-white" style="margin-top:10rpx">{{userInfo.nickName}}</view>
+</view>
+
+<view class="padding flex text-center text-grey bg-white shadow-warp" style="width:90%;margin:auto;position:relative;top:-80rpx">
+    <view class="flex flex-sub flex-direction solid-right {{curList==1?'text-red':''}}" data-index="1" bindtap="toggleList">
+      <view class="text-xxl "><text class="cuIcon-sort"></text></view>
+      <view class="margin-top-sm">
+        我发起的</view>
+    </view>
+    <view class="flex flex-sub flex-direction solid-right {{curList==2?'text-red':''}}" data-index="2" bindtap="toggleList">
+      <view class="text-xxl "><text class="cuIcon-moneybag"></text></view>
+      <view class="margin-top-sm">
+         我参与的</view>
+    </view>
+    <view class="flex flex-sub flex-direction {{curList==3?'text-red':''}}" data-index="3" bindtap="toggleList">
+      <view class="text-xxl "><text class="cuIcon-like"></text></view>
+      <view class="margin-top-sm">
+         我的中奖</view>
+    </view>
+  </view>
+
+  <view wx:if="{{curList==1}}" style="margin:auto;position:relative;top:-50rpx">
+      
+          <view  wx:for="{{lotte_list_1}}">
+          <view class="cu-list menu " >
+                <view class="cu-item" data-index="{{index}}" bindtap="showbar">
+                        <view class="content">
+                          <text class="cuIcon-circlefill text-blue"></text>
+                          <text class="text-grey">{{item.title}}</text>
+                        </view>
+                </view>
+                <view wx:if="{{item.showbar}}" class="flex solid-bottom padding justify-around " style="background-color:#fff">
+             
+                    <view class=" padding-sm margin-xs radius">
+                              <button class="cu-btn round bg-green sm " data-id="{{item.id}}" bindtap="editLotte">
+                              <text class="cuIcon-upload"></text> 编辑</button>
+                    </view>
+                    <view class=" padding-sm margin-xs radius">
+                              <button class="cu-btn round bg-red sm " data-id="{{item.id}}" bindtap="delLotte" >
+                              <text class="cuIcon-share" ></text> 删除</button>
+                    </view>
+                    <view class=" padding-sm margin-xs radius">
+                              <button class="cu-btn round bg-yellow text-white  sm " data-id="{{item.id}}" bindtap="share">
+                              <text class="cuIcon-upload" ></text> 分享</button>
+                    </view>
+                    <view class=" padding-sm margin-xs radius">
+                              <button class="cu-btn round bg-blue sm " data-id="{{item.id}}" bindtap="toLotte">
+                              <text class="cuIcon-upload"></text> 查看</button>
+                    </view>
+                  
+                </view>
+          </view>
+          </view>    
+  </view>
+  <view wx:elif="{{curList==2}}" style="margin:auto;position:relative;top:-50rpx">
+    <view class="cu-list menu  ">
+        <view class="cu-item" wx:for="{{lotte_list_2}}" data-id="{{item.id}}" bindtap="toLotte">
+          <view class="content">
+            <text class="cuIcon-present text-red"></text>
+            <text class="text-grey">{{item.title}}</text>
+          </view>
+        </view>
+    </view>   
+  </view>
+  <view wx:else></view>
+
+<!-- <van-collapse value="{{ activeNames }}" bind:change="onChange" >
+  <van-collapse-item title="我发起的抽奖" name="1">
+    <view class="cu-list menu">
+        <view class="cu-item" wx:for="{{lotte_list_1}}" >
+          <view class="content">
+            <text class="cuIcon-circlefill text-blue"></text>
+            <text class="text-grey">{{item.title}}</text>
+          </view>
+            <view class="action">
+              <button class="cu-btn round bg-green sm " data-id="{{item.id}}" bindtap="editLotte">
+                <text class="cuIcon-upload"></text> 编辑</button>
+                <button class="cu-btn round bg-red sm " data-id="{{item.id}}" bindtap="delLotte" >
+                <text class="cuIcon-share" ></text> 删除</button>
+                <button class="cu-btn round bg-yellow text-white  sm " data-id="{{item.id}}" bindtap="share">
+                <text class="cuIcon-upload" ></text> 分享</button>
+                <button class="cu-btn round bg-blue sm " data-id="{{item.id}}" bindtap="toLotte">
+                <text class="cuIcon-upload"></text> 查看</button>
+            </view>
+        </view>
+    </view>    
+  </van-collapse-item>
+  <van-collapse-item title="我参与的抽奖" name="2">
+    <view class="cu-list menu  ">
+        <view class="cu-item" wx:for="{{lotte_list_2}}" data-id="{{item.id}}" bindtap="toLotte">
+          <view class="content">
+            <text class="cuIcon-present text-red"></text>
+            <text class="text-grey">{{item.title}}</text>
+          </view>
+        </view>
+    </view>    
+  </van-collapse-item>
+</van-collapse> -->
+</view>
+<view style="height:100rpx"></view>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="toggle" data-cur="comm1" >
+    <view class='cuIcon-cu-image'>
+      <text class="cuIcon-presentfill lg text-{{PageCur=='comm1'?'red':'gray'}}"></text>
+    </view>
+    
+    <view class="{{PageCur=='basics'?'text-green':'text-gray'}}">首页</view>
+  </view>
+  <view class="action"  bindtap="toggle" data-cur="comm2" >
+    <view class='cuIcon-cu-image'>
+      <text class="cuIcon-peoplefill lg text-{{PageCur=='comm2'?'red':'gray'}}"></text>
+    </view>
+    <view class="{{PageCur=='component'?'text-green':'text-gray'}}">我的</view>
+  </view>
+</view>
+<van-dialog id="van-dialog">
+</van-dialog>
+
+<van-dialog
+  use-slot
+  title="参与码"
+  show="{{show}}"
+  show-cancel-button
+  confirm-button-open-type="getUserInfo"
+  bind:close="onClose"
+  bind:confirm="joinLotte"
+>
+ <view class="cu-form-group margin-top">
+        <input value="{{code}}"  bindinput="codeChange" placeholder="请输入活动参与码"></input>
+      </view>
+</van-dialog>
+<van-toast id="van-toast" />
+
+<van-dialog
+  use-slot
+  title="登录"
+  show="{{login}}"
+  show-cancel-button
+  confirm-button-open-type="getUserInfo"
+  bind:close="fn_getUserInfo"
+  bind:confirm="fn_getUserInfo"
+>
+ <view class="padding center" style="text-align:center">使用微信号登录</view>
+</van-dialog>
+<Api id="api"></Api>

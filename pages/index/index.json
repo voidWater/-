@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "Api": "/pages/api/api"
+  }
+}

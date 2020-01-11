@@ -1,0 +1,118 @@
+<cu-custom bgColor="bg-gradual-red" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">{{lotte.title}}</view>
+</cu-custom>
+<scroll-view wx:if="{{master}}" scroll-x class="bg-red nav ">
+  <view class="cu-item flex-sub {{tabIndex==1?'text-white cur':''}}" bindtap="tabSelect" data-id="1">
+    抽奖
+  </view>
+  <view class="cu-item flex-sub {{tabIndex==2?'text-white cur':''}}" bindtap="tabSelect" data-id="2">
+    控制台
+  </view>
+</scroll-view>
+
+<view wx:if="{{tabIndex==1}}">
+<view wx:if="{{lotte.status==1}}" class="padding flex flex-direction " style="text-align:center">
+  <view>即将开奖，敬请期待</view>     
+</view>
+<swiper wx:else  class="tower-swiper round-dot" indicator-dots="true" circular="true" autoplay="true" interval="5000" duration="500" bindchange="cardSwiper" indicator-color="#8799a3" indicator-active-color="#0081ff" style="height:300px">
+  <swiper-item wx:for="{{lotte.list}}" wx:key class="{{cardCur==index?'cur':''}}">
+    <view class="swiper-item">
+        <view class="cu-card case">
+          <view class="cu-item shadow" >
+            <view class="image">
+              <image src="{{item.fmurl}}"  style="height:400rpx"></image>
+              <view class="cu-tag bg-red">{{item.name}}</view>
+              <view class="cu-bar bg-shadeBottom">
+                <text class="text-cut">{{item.des}}</text>
+              </view>
+            </view>
+            <view class="cu-list menu-avatar">
+              <view class="cu-item padding" style="height:200rpx">
+                <view class="cu-avatar lg round " style="background-image:url( {{item.avaurl==null?'/images/5bd2fe5e4e72a_610.jpg':item.avaurl}});"></view>
+                <view class="content flex-sub">
+                  <view class="text-grey">{{item.title}}</view>
+                  <view class="text-gray text-sm flex justify-between" data-id="{{item.id}}" bindtap="getLuckPar">
+                  {{item.avaurl==null?item.num+'份':'恭喜你'}}
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+    </view>
+  </swiper-item>
+</swiper>
+</view>
+<view wx:else>
+    <view wx:if="{{lotte.status==1}}" class="padding flex flex-direction">
+      <button class="cu-btn bg-red margin-tb-sm lg"  data-type="open" bindtap="beginlotte">开始抽奖</button>
+    </view>
+    <van-collapse  wx:else  value="{{ activeNames }}" bind:change="downChange" >
+      <van-collapse-item class="" wx:for="{{lotte.list}}" title="{{item.name+ (item.status==3?'(已开奖)':'')}}" name="{{index}}">
+        <view class=" flex flex-direction">
+          <button class="cu-btn bg-red margin-tb-sm lg"  data-type="openItem" data-id="{{item.id}}" data-index="{{index}}" 
+          disabled="{{item.status==3}}" bindtap="openLotte">{{item.status==3?'已开奖':'开奖'}}</button>
+        </view>
+      </van-collapse-item>
+    </van-collapse>
+</view>
+<view style="text-align:center;font-szie:150rpx">
+</view>
+<view class="cu-bar bg-white margin-top">
+  <view class="action">
+    <text class="cuIcon-title text-blue"></text>参与者
+  </view>
+</view>
+<view class="padding">
+  <view class="cu-avatar round lg margin-left" wx:for="{{par}}" wx:key style="background-image:url({{item.avaurl}});margin-bottom:50rpx" >
+    <view style="margin-top:120rpx;font-size:20rpx;color:#000;">
+    <text style="width:50rpx;overflow: hidden; text-overflow:ellipsis;">{{item.nikname}}</text>
+    </view>
+  </view>
+</view>
+
+
+<van-overlay show="{{ show }}" bind:click="onClickHide">
+  <view class="wrapper">
+    <view>
+      <image src="{{currItem.fmurl}}"  style="height:300rpx"></image>
+    </view>
+    <view class="block padding" catch:tap="noop" >
+          <view wx:if='{{!showPar}}'>
+              <view >
+              <view  class="im-centent cu-avatar bb round" style="background-image:url({{cuPar.avaurl}});">
+              </view>
+              </view>
+              <view class="margin-top">{{cuPar.nikname}}</view>
+          </view>
+          <view wx:else>
+            <view style="color:red;font-size:40rpx">恭喜！</view>
+            <view  class="cu-avatar round lg margin" wx:for="{{luckPar}}" wx:if="{{item.show}}" wx:key style="background-image:url({{item.avaurl}});">
+              <view style="margin-top:120rpx;font-size:20rpx;color:#000;">
+              <text style="width:50rpx;overflow: hidden; text-overflow:ellipsis;">{{item.nikname}}</text>
+              </view>
+            </view>
+          </view>
+    </view>
+  </view>
+  
+  
+  <!-- <view class="wrapper">
+      <view class="block" catch:tap="noop" >
+      <view style="text-align:center">2020加油！</view>
+      <view wx:if="{{!showLuck}}" class="cu-avatar xl round" 
+      style="background-image:url({{cuavaurl}});">
+      </view>
+      <view wx:else>
+          <view  class="cu-avatar round lg " wx:for="{{luckPar}}" wx:key style="background-image:url({{item.avaurl}});" >
+            <view style="margin-top:120rpx;font-size:20rpx;color:#000;">
+            <text style="width:50rpx;overflow: hidden; text-overflow:ellipsis;">{{item.nikname}}</text>
+            </view>
+        </view>
+        </view> 
+      </view>
+  </view> -->
+</van-overlay>
+<Api id="api"></Api>
+<button bindtap="sendSocketMessage">2131</button>
