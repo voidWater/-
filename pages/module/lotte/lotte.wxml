@@ -22,7 +22,7 @@
           <view class="cu-item shadow" >
             <view class="image">
               <image src="{{item.fmurl}}"  style="height:400rpx"></image>
-              <view class="cu-tag bg-red">{{item.name}}</view>
+              <view class="cu-tag bg-red">{{item.name}}{{item.status==3?"已开奖":""}}</view>
               <view class="cu-bar bg-shadeBottom">
                 <text class="text-cut">{{item.des}}</text>
               </view>
@@ -32,8 +32,8 @@
                 <view class="cu-avatar lg round " style="background-image:url( {{item.avaurl==null?'/images/5bd2fe5e4e72a_610.jpg':item.avaurl}});"></view>
                 <view class="content flex-sub">
                   <view class="text-grey">{{item.title}}</view>
-                  <view class="text-gray text-sm flex justify-between" data-id="{{item.id}}" bindtap="getLuckPar">
-                  {{item.avaurl==null?item.num+'份':'恭喜你'}}
+                  <view class="text-gray text-sm flex justify-between"  >
+                  {{item.avaurl==null?item.num+'份':'恭喜你'}}<view data-lotteid="{{lotte.id}}" data-itemid="{{item.id}}" bindtap="getLuckPar" >查看获奖者</view>
                   </view>
                 </view>
               </view>
@@ -75,10 +75,11 @@
 
 <van-overlay show="{{ show }}" bind:click="onClickHide">
   <view class="wrapper">
-    <view>
-      <image src="{{currItem.fmurl}}"  style="height:300rpx"></image>
-    </view>
+    
     <view class="block padding" catch:tap="noop" >
+          <view style="margin-top:120rpx;margin-top:30rpx">
+            <image src="{{currItem.fmurl}}"  style="height:300rpx;z-index:99999"></image>
+          </view>
           <view wx:if='{{!showPar}}'>
               <view >
               <view  class="im-centent cu-avatar bb round" style="background-image:url({{cuPar.avaurl}});">
@@ -115,4 +116,21 @@
   </view> -->
 </van-overlay>
 <Api id="api"></Api>
-<button bindtap="sendSocketMessage">2131</button>
+
+<view class="cu-modal {{showCheckLuckP==true?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="content">获奖者</view>
+      <view class="action" bindtap="hideModal">
+        <text class="cuIcon-close text-red"></text>
+      </view>
+    </view>
+    <view class="padding-xl">
+          <view  class="cu-avatar round lg margin" wx:for="{{checkLuckP}}"  style="background-image:url({{item.avaurl}});">
+              <view style="margin-top:120rpx;font-size:20rpx;color:#000;">
+              <text style="width:50rpx;overflow: hidden; text-overflow:ellipsis;">{{item.nikname}}</text>
+              </view>
+          </view>
+    </view>
+  </view>
+</view>

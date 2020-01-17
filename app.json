@@ -1,10 +1,11 @@
 {
   "pages": [
-    "pages/module/lotte/lotte",
+    
     "pages/module/lotte/index",
     "pages/index/index",
     "pages/logs/logs",
-    "pages/module/lotte/create"
+    "pages/module/lotte/create",
+    "pages/module/lotte/lotte"
   ],
   "window": {
     "backgroundTextStyle": "light",

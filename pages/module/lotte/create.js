@@ -1,6 +1,7 @@
 import Dialog from '../../../vant/dialog/dialog';
 import Toast from '../../../vant/toast/toast';
 import Utils from '../../../utils/util';
+var that;
 // pages/module/lotte/create.js
 Page({
 
@@ -31,14 +32,16 @@ Page({
     date: '2018-12-25'
   },
   selectImg(e){//选择图片
-    var that = this;
+    
     var lotteList = that.data.lotteList;
     this.api.getLocalImage(function(res){
+      that.api.loading("获取图片");
       that.api.uploadImgToTsy(res,function(res){
         lotteList[e.currentTarget.dataset.index].fmurl = res;
         that.setData({
           lotteList: lotteList
         });
+        that.api.loading();
       });
             //  wx.uploadFile({
             //    url: that.data.UpfileServer.upfileUrl,
@@ -78,7 +81,7 @@ Page({
     }
     lotte.title = this.data.name;
     console.log(lotte);
-    var that = this;
+    
     this.api.httpPost("lotte/create", JSON.stringify(lotte) ,function (res) { 
       if (res == "0") {
         that.setData({ creating: false });
@@ -104,7 +107,7 @@ Page({
     }
     lotte.title = this.data.name;
     console.log(lotte);
-    var that = this;
+    
     this.api.httpPost("lotte/update", JSON.stringify(lotte),function(res){
       console.log(res)
       if (res == "0") {
@@ -132,28 +135,41 @@ Page({
     });
   },
   minlottery(e) {
-    var that = this;
+    
     if (this.data.type == 'new') {
       var lotteList = this.data.lotteList;
+      console.log(e.currentTarget.dataset.index)
       lotteList.splice(e.currentTarget.dataset.index, 1);
       this.setData({
         lotteList: lotteList
       });
     } else {
-      this.apt.httpGet("lotte/delItem?id=" + e.currentTarget.dataset.index,function(res){
-        if (res == '1') {
-          var lotteList = that.data.lotteList;
-          lotteList.splice(e.currentTarget.dataset.index, 1);
-          that.setData({
-            lotteList: lotteList
-          });
-        } else {
-        }
-      });
+      console.log(e.currentTarget.dataset.id)
+      if (e.currentTarget.dataset.id){
+        console.log(e.currentTarget.dataset.id)
+        this.api.httpGet("lotte/delItem?id=" + e.currentTarget.dataset.id, function (res) {
+          if (res == '1') {
+            var lotteList = that.data.lotteList;
+            lotteList.splice(e.currentTarget.dataset.index, 1);
+            that.setData({
+              lotteList: lotteList
+            });
+          } else {
+          }
+        });
+      }else{
+        var lotteList = this.data.lotteList;
+        console.log(e.currentTarget.dataset.index)
+        lotteList.splice(e.currentTarget.dataset.index, 1);
+        this.setData({
+          lotteList: lotteList
+        });
+      }
+      
     }
   },
   getLotte(id) {
-    var that = this;
+    
     this.api.httpGet('lotte/get?id=' + id, function (res) {
       var lotteList = res.list;
       console.log(lotteList);
@@ -209,6 +225,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    that = this;
     if (options.id == undefined) {
       console.log("new")
       this.setData({

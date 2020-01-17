@@ -1,3 +1,5 @@
+const app = getApp()
+var that;
 Page({
   /**
    * 页面的初始数据
@@ -7,18 +9,18 @@ Page({
     lotte: null,
     par: [],
     tabIndex: 1,
-    time: 30 * 60 * 60 * 1000,
     show: false,
     cuPar: "",
     showLuck: false,
     luckPar: [],
     master: false,
     currItem: null,
-    showPar:false
+    showPar:false,
+    showCheckLuckP:false,
+    checkLuckP:[]
   },
   onClickShow() {
     this.setData({ show: true });
-    var that = this;
     that.setData({
       cuavaurl: that.data.par[0].avaurl
     });
@@ -41,7 +43,6 @@ Page({
     }, 10000)
   },
   chujiang() {
-    var that = this;
     wx.request({
       url: app.globalData.serverUrl + '/lotte/getP?id=' + this.data.lotte.id, //仅为示例，并非真实的接口地址
       header: {
@@ -78,25 +79,6 @@ Page({
       }
     })
   },
-  getLuckPar() {
-    wx.request({
-      url: app.globalData.serverUrl + '/lotte/getP?id=' + options.id, //仅为示例，并非真实的接口地址
-      header: {
-        'content-type': 'application/json' // 默认值
-      },
-      success(res) {
-        that.setData({
-          par: res.data
-        });
-      }
-    })
-  },
-  getLuckPar(e) {
-    this.setData({
-      currItem:this.data.lotte.list[e.currentTarget.dataset.index]
-    })
-    console.log(e.currentTarget.dataset.index);
-  },
   /**
    * 控制台
    */
@@ -117,16 +99,10 @@ Page({
     });
   },
   beginlotte(e){//开始抽奖
-      var that = this;
-      console.log(e.currentTarget.dataset.type)
+      //console.log(e.currentTarget.dataset.type)
       this.api.httpGet('lotte/openLotte?openId=' + this.data.openId + '&lotteId=' + this.data.lotte.id + '&lotteItemId=' + e.currentTarget.dataset.id + '&type=' + e.currentTarget.dataset.type + '&status=3', function (res) {
-        console.log(res.data)
         if (e.currentTarget.dataset.type == 'open' && res == 1) {
-          var lotte = that.data.lotte;
-          lotte.status = 2
-          that.setData({
-            lotte: lotte
-          });
+          that.sendSocketMessage("open");
         }
       });
   },
@@ -135,15 +111,13 @@ Page({
       currItem: this.data.lotte.list[e.currentTarget.dataset.index]
     });
     //String openId,String lotteId,String lotteItemId,String type,int status
-    var that = this;
     this.api.httpGet('lotte/openLotte?openId=' + this.data.openId + '&lotteId=' + this.data.lotte.id + '&lotteItemId=' + e.currentTarget.dataset.id + '&type=openItem' + '&status=3',function(res){
       console.log(res)
       if(res=='success'){
-        that.refresh(that.data.lotte.id, e.currentTarget.dataset.id)
-        that.tramLotte();
+        that.sendSocketMessage("openItem" , e.currentTarget.dataset.id);
+        //that.refresh(that.data.lotte.id, e.currentTarget.dataset.id)
       }
     });
-    //this.tramLotte();
   },
   onClickHide() {
     this.setData({ show: false });
@@ -151,7 +125,6 @@ Page({
   },
   tramLotte(){
     this.setData({ show: true });
-    var that = this;
     that.setData({
       cuavaurl: that.data.par[0].avaurl
     });
@@ -175,10 +148,11 @@ Page({
       showPar:true
     })
     var i = 0;
-    var that = this;
-    this.il = setInterval(function () {
+     var il = setInterval(function () {
       if (i > that.data.par.length - 1) {
-        clearInterval(that.il)
+        console.log(1)
+        clearInterval(il)
+        return
       }
       var luckPar = that.data.luckPar
       luckPar[i].show = true;
@@ -189,28 +163,45 @@ Page({
     }, 1000)
   },
   refresh(val1,val2){
-    var that = this;
-    this.api.httpGet("lotte/getLuckPar?lotteId=" + val1+"&lotteItemId=" + val2,function(res){
+    this.api.httpGet("lotte/getLuckPar?lotteId=" + val1+"&lotteItemId=" + val2,function(res){//获取获奖人
       console.log(res)
       that.setData({
         luckPar: res
       })
+      that.tramLotte();
     });
   },
-  sendSocketMessage() {
-
-      var ob = {code:"2131231312"}
+  getLuckPar(e) {
+    this.api.httpGet("lotte/getLuckPar?lotteId=" + e.currentTarget.dataset.lotteid + "&lotteItemId=" + e.currentTarget.dataset.itemid, function (res) {//获取获奖人
+      that.setData({
+        showCheckLuckP:true,
+        checkLuckP: res
+      })
+    });
+  },
+  hideModal(){
+    that.setData({
+      showCheckLuckP: false
+    })
+  },
+  /**
+   * websocket
+   */
+  sendSocketMessage(command,itemId) {
+    var ob = { code: command, lotteId: this.data.lotte.id}
+      if(itemId){
+        ob.itemId = itemId
+      }
+      console.log(ob)
       wx.sendSocketMessage({
         data: JSON.stringify(ob)
       })
   },
   initEventHandle(){
     let that = this
-    wx.onSocketMessage((res) => {
-      //收到消息
-    })
     wx.onSocketOpen(() => {
       console.log('WebSocket连接打开')
+      that.sendSocketMessage("start");
     })
     wx.onSocketError(function (res) {
       console.log('WebSocket连接打开失败')
@@ -221,12 +212,24 @@ Page({
     wx.onSocketMessage(this.handleWebsocketMessage);
   },
   handleWebsocketMessage(res){
+    console.log("----接收----")
     console.log(res)
+    if (res.data=='open'){
+      var lotte = that.data.lotte;
+      lotte.status = 2
+      that.setData({
+        lotte: lotte
+      });
+    } else if(res.data!='success'){
+      console.log(res.data)
+      this.refresh(that.data.lotte.id, res.data);
+    }
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    that = this;
     console.log(options.id)
     this.setData({
       id: options.id
@@ -239,18 +242,10 @@ Page({
     //获取该抽奖信息和参与者信息
     this.api = this.selectComponent("#api");
     this.api.getInfo(this, ['userInfo', 'openId', 'UpfileServer']);
-    var that = this;
-    wx.connectSocket({
-      url: 'ws://127.0.0.1:8089/websocket',
-      data:{
-        code:"123123"
-      }, success() {
-        console.log('连接成功')
-        that.initEventHandle()
-      }
-    });
    
-    this.api.httpGet('lotte/get?id=0ad6b1533dcc4d5c863622c3bc5f972b' ,function(res){
+    
+    //获取抽奖信息和参与人信息
+    this.api.httpGet('lotte/get?id=' + this.data.id ,function(res){
         console.log(res)
         if (res.openid == that.data.openId) {
           that.setData({
@@ -260,7 +255,14 @@ Page({
         that.setData({
           lotte: res
         });
-      that.api.httpGet("lotte/getP?id=0ad6b1533dcc4d5c863622c3bc5f972b" ,function(res){
+        wx.connectSocket({
+          url: app.globalData.wxUrl,
+          success() {
+            console.log('连接成功')
+            that.initEventHandle()
+          }
+        });
+      that.api.httpGet("lotte/getP?id=" + that.data.id ,function(res){
             that.setData({
               par: res
             });

@@ -1,3 +1,4 @@
+import Toast from '../../vant/toast/toast';
 const app = getApp();
 // pages/Api/Api.js
 /**
@@ -23,13 +24,31 @@ Component({
    * 组件的初始数据
    */
   data: {
-
+    
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
+    loading(msg){
+      if(msg){
+        Toast.loading({
+          duration: 0,       // 持续展示 toast
+          forbidClick: true, // 禁用背景点击
+          message: msg,
+          loadingType: 'spinner',
+          selector: '#van-toast'
+        });
+      }
+      else{
+        Toast.clear();
+      }
+      
+    },
+    toast(msg){
+      Toast(msg);
+    },
     navTo(url, data) {//跳转页面
       wx.navigateTo({
         url: url,

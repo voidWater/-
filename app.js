@@ -34,7 +34,6 @@ App({
             success: res => {
               // 可以将 res 发送给后台解码出 unionId
               this.globalData.userInfo = res.userInfo
-
               // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
               // 所以此处加入 callback 以防止这种情况
               if (this.userInfoReadyCallback) {
@@ -48,9 +47,11 @@ App({
   },
   globalData: {
     userInfo: null,
-    openId:"oqIg_5fGoI1FZE68KMs93mOVjHtU",
-    serverUrl:'http://localhost:8089/',
-    //serverUrl: 'https://fullmusic.club/wxcj/',
+    //wxUrl: 'wss://127.0.0.1:444/websocket',
+    //serverUrl: 'http://localhost:8089/',
+    wxUrl:'wss://fullmusic.club/websocket',
+    serverUrl: 'https://fullmusic.club/wxcj/',
+    websocket:'',
     UpfileServer:{
       bucket: 'wxcx01',
       secret_key: '312e3cbecc9c19b5c434aa9a997be482',

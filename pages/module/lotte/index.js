@@ -18,7 +18,7 @@ Page({
     show: false,
     code: "",
     login: false,
-    curList:1
+    curList:2
   },
   /**
    * 首页登录管理
@@ -114,7 +114,7 @@ Page({
   delLotte: function (e) {
     console.log(e.currentTarget.dataset.id)
     var that = this;
-    this.data.httpGet('lotte/del?id=' + e.currentTarget.dataset.id,function(){
+    this.api.httpGet('lotte/del?id=' + e.currentTarget.dataset.id,function(){
       that.list();
     });
   },
@@ -159,13 +159,14 @@ Page({
     var that = this;
     var url = 'lotte/join?openId=' + this.data.openId + ' &nickName=' + this.data.userInfo.nickName + "&avaUrl=" + this.data.userInfo.avatarUrl + "&code=" + this.data.code;
     this.api.httpGet(url, function (res) {
+       console.log(res)
         if (res == []) {
           console.log(res.data);
           Toast("该邀请码无效");
           return
         }
         wx.navigateTo({
-          url: 'lotteryView?id=' + res
+          url: 'lotte?id=' + res
         })
     });
   },
