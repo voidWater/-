@@ -1,0 +1,10 @@
+.bg-page{
+  background-color:#FFF
+}
+.bg-s{
+  background-color: #FF6666;
+  color:#fff;
+}
+.center{
+  text-align: center
+}

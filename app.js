@@ -4,6 +4,7 @@ App({
     // 获取系统状态栏信息
     wx.getSystemInfo({
       success: e => {
+        //获取状态栏高度
         this.globalData.StatusBar = e.statusBarHeight;
         let capsule = wx.getMenuButtonBoundingClientRect();
         if (capsule) {
@@ -12,8 +13,12 @@ App({
         } else {
           this.globalData.CustomBar = e.statusBarHeight + 50;
         }
+        //获取用户屏幕高度
+        this.globalData.ClientHeight = e.windowHeight
+        
       }
     })
+   
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())

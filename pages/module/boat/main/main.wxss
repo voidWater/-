@@ -1,0 +1,29 @@
+/* pages/module/boat/main/main.wxss */
+.page-section-gap{
+  box-sizing: border-box;
+  padding: 0 30rpx;
+}
+
+page{
+  background-color: #fff;
+}
+.but-add{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+.but-add .text{
+  font-size: 80rpx;
+  width: 110rpx;
+  border-radius: 80rpx;
+  text-align: center;
+  border: 8rpx solid #eeeded;
+  margin: 30rpx auto;
+  
+}
+.but-add .tip{
+ text-align: center;
+}
+.dialog-form{
+ text-align: left;
+}

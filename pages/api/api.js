@@ -5,12 +5,21 @@ const app = getApp();
  * 跳转页面:              navTo(url,data)
  * get http访问:          httpGet(url, fn)
  * post http访问:         httpPost(url, data, fn)
- * 获取当前定位:           getLocation(fn)
+ * 
  * 获取用户信息:           getUserInfo(fn)
  * 获取用户小程序openId:   getOpenId(fn) 
+ * 
+ * 获取当前定位:           getLocation(fn)
+ * 
+ * 获取本地或拍摄图片       getLocalImage(fn) param [res:图片地址]
+ * 获取本地或拍摄图片       getLocalImage(fn) param [res:图片地址]
+ * 
  * 获取基本信息:           getInfo(instan, param, fn)[location,userInfo,openId,ColorList,UpfileServer]
- * 获取本地或拍摄图片       getLocalImage(fn) param [res:图片地址]
- * 获取本地或拍摄图片       getLocalImage(fn) param [res:图片地址]
+ *                        getAppInfo(instan, param, fn)
+ *                        CustomBar:状态栏高度
+ *                        ClientHeight:手机高度
+ *                        location:当前位置
+ * 
  */
 Component({
   /**
@@ -155,6 +164,26 @@ Component({
         }
       }
     },
+    getAppInfo(instan, param, fn) {//获取基本信息,new
+      for(let i = 0 ;i<param.length;i++){
+        if (app.globalData[param[i]]) {
+          let para = {}
+          para[param[i]] = app.globalData[param[i]]
+          instan.setData(para)
+          fn("success get:"+param[i]);
+        }else{
+          if (param[i]=='location'){
+            this.getLocation(function(val){
+              instan.setData({
+                location:val
+              })
+              fn("location");
+            })
+          }
+          fn("fail get:" + param[i]);
+        }
+      }
+    },
     getInfo(instan, param, fn) {//获取基本信息
       for (let i = 0; i < param.length; i++) {
         if (param[i] == "location") {
@@ -183,6 +212,14 @@ Component({
         } else if (param[i] == 'UpfileServer'){
           instan.setData({
             UpfileServer: app.globalData.UpfileServer
+          });
+        } else if (param[i] == 'CustomBar') {
+          instan.setData({
+            CustomBar: app.globalData.CustomBar
+          });
+        } else if (param[i] == 'ClientHeight') {
+          instan.setData({
+            ClientHeight: app.globalData.ClientHeight
           });
         }
       }

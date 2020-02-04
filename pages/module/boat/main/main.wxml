@@ -1,0 +1,56 @@
+<Api id="api"></Api>
+<cu-custom bgColor="bg-gradual-blue" >
+  <view slot="content">刻舟求剑</view>
+</cu-custom>
+
+<map id="map" longitude="113.324520" latitude="23.099994" scale="14" controls="{{controls}}" bindcontroltap="controltap" markers="{{markers}}" bindmarkertap="markertap" polyline="{{polyline}}" bindregionchange="regionchange" 
+bindtap="marking"
+show-location style="width: 100%; height: {{ClientHeight-CustomBar}}px;"></map>
+<view class="but-add">
+  <view wx:if="{{!addflag}}" class="bg-blue text" bindtap="beginmarking">
+    <text class="cuIcon-add lg"></text>
+  </view>
+  <view wx:else class="tip bg-blue">
+    <view >请在地图上点击你想要标记的位置</view>
+    <view class="text-blue">请在地图上点击你想要标记的位置</view>
+  </view>
+</view>
+
+<view class="cu-modal  {{addshow?'show':''}} ">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="action" bindtap="hideModal">
+         <view class="content">新建一个标记</view>
+      </view>
+    </view>
+    <view class="dialog-form">
+        <view class="cu-form-group">
+          <view class="grid col-4 grid-square flex-sub">
+            <view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{imgList[index]}}">
+              <image src='{{imgList[index]}}' mode='aspectFill'></image>
+              <view class="cu-tag bg-red" catchtap="DelImg" data-index="{{index}}">
+                <text class="cuIcon-close"></text>
+              </view>
+            </view>
+            <view class="solids" bindtap="chooseImage" wx:if="{{imgList.length<3}}">
+              <text class="cuIcon-cameraadd"></text>
+            </view>
+          </view>
+        </view>
+        <view class="cu-form-group margin-top">
+          <input  data-type="name" bindinput="itemChange" placeholder="标题"></input>
+        </view>
+        <view class="cu-form-group ">
+          <textarea data-type="des" maxlength="-1"  bindinput="itemChange" placeholder="描述"></textarea>
+        </view>
+    </view>
+    <view class="cu-bar bg-white justify-end">
+      <view class="action">
+        <button class="cu-btn line-blue text-gray" bindtap="hideModal">取消</button>
+        <button class="cu-btn bg-blue margin-left" bindtap="saveMarke">确定</button>
+
+      </view>
+    </view>
+  </view>
+</view>
+

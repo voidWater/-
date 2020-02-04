@@ -1,0 +1,47 @@
+<Api id="api"></Api>
+<view class="page bg-page">
+  <view wx:if="{{cur=='start'}}">
+      <view class="padding" style="margin-top:{{CustomBar+40}}rpx">
+        <view class="padding">
+        <swiper class="screen-swiper square-dot" style="height:{{ClientHeight-CustomBar-100}}px" indicator-dots="true" circular="true" autoplay="true" interval="5000" duration="500">
+          <swiper-item wx:for="{{swiperList}}" >
+            <image src="{{item.url}}" mode="aspectFill" wx:if="{{item.type=='image'}}"></image>
+            <video src="{{item.url}}" autoplay loop muted show-play-btn="{{false}}" controls="{{false}}" objectFit="cover" wx:if="{{item.type=='video'}}"></video>
+          </swiper-item>
+        </swiper>
+        </view>
+        </view>
+        <view class="bottom-view">
+          <view class="margin" >
+            <button class="cu-btn round bg-s" disabled="{{jump>0}}">{{jump>0?jump+'s':'跳过'}}</button>
+          </view>
+        </view>
+  </view>
+  <view wx:elif="{{cur=='init'}}" style="margin-top:300rpx">
+    <van-transition name="fade-down" show="{{ show }}" custom-class="block">
+    <view class="center">
+      <image mode="aspectFit" src="/images/log.png"></image>
+    </view>
+    </van-transition>
+    <view class="footer">
+      <van-transition name="fade-up" show="{{ show }}" custom-class="block">
+        <view class="center">
+          <view style="font-size:50rpx;color:#c5c5c5;margin-top:50rpx">谷雨科技</view>
+        </view>
+      </van-transition>
+      <van-transition name="fade" show="{{ register }}" custom-class="block">
+        <view class="padding flex flex-direction margin">
+            <button class="cu-btn bg-green lg" bindtap="register"><text class="cuIcon-weixin lg"></text>使用微信登陆</button>
+        </view>
+      </van-transition>
+      
+    </view>
+    
+  </view>
+  <view wx:elif="{{cur=='reg'}}">2</view>
+  
+</view>
+
+<view class='load-progress {{loadProgress!=0?"show":"hide"}}' style="top:{{CustomBar}}px;">
+  <view class='load-progress-bar bg-green' style="transform: translate3d(-{{100-loadProgress}}%, 0px, 0px);"></view>
+</view>
