@@ -107,7 +107,7 @@ Component({
     },
     getLocation(fn) {//获取当前定位
       wx.getLocation({
-        type: 'wgs84',
+        type: 'gcj02',
         success: (res) => {
           fn(res);
         }
@@ -177,10 +177,15 @@ Component({
               instan.setData({
                 location:val
               })
-              fn("location");
+              fn("get location success");
+              console.log("get location success->")
+              console.log(val)
+              console.log("get location success<-")
             })
+          }else{
+            fn("fail get:" + param[i]);
           }
-          fn("fail get:" + param[i]);
+         
         }
       }
     },

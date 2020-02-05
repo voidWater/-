@@ -1,66 +1,34 @@
+let num = 0
 Page({
   data: {
     addflag:false,
     addshow:false,
     imgList: [],
-    markes:[],
-    map:{
-      latitude: 113.324520,
-      longitude: 23.099994,
-    },
-    latitude: 23.099994,
-    longitude: 113.324520,
-    markers: [{
-      iconPath: "/images/marker.png",
-      id: 0,
-      latitude: 23.099994,
-      longitude: 113.324520,
-      width: 50,
-      height: 50
-    }],
-    polyline: [{
-      points: [{
-        longitude: 113.3245211,
-        latitude: 23.10229
-      }, {
-        longitude: 113.324520,
-        latitude: 23.21229
-      }],
-      color: "#FF0000DD",
-      width: 2,
-      dottedLine: true
-    }],
-    controls: [{
-      id: 1,
-      iconPath: '/images/marker.png',
-      position: {
-        left: 0,
-        top: 300 - 50,
-        width: 50,
-        height: 50
-      },
-      clickable: true
-    }]
+    markers: [],
+    curNav:'map'
+  },
+  tabSelect(e){
+    this.setData({
+      curNav: e.currentTarget.dataset.id
+    })
   },
   beginmarking(){
-    that.setData({
+    this.setData({
       addflag:true
     })
   },
   marking(val){
-    if(that.data.addflag){
-      that.setData({
-        addshow: true
-      })
-    }
-    console.log(val);
-    that.setData({
-      latitude: val.detail.latitude,
-      longitude: val.detail.longitude,
+    this.setData({
+      addshow: true
     })
+    console.log(val);
+    // this.setData({
+    //   latitude: val.detail.latitude,
+    //   longitude: val.detail.longitude,
+    // })
   },
   hideModal(){
-    that.setData({
+    this.setData({
       addshow: false
     })
   },
@@ -93,60 +61,76 @@ Page({
     }
   },
   saveMarke(){
-    that.setData({
+    this.setData({
       addflag: false,
       addshow: false
     })
-    let marke = {
-      name: that.data.name,
-      des: that.data.des,
-      latitude: that.data.latitude,
-      longitude: that.data.latitude,
-      imgList: that.data.imgList,
-    }
-    this.setData({
-      markes: this.data.markes.concat(marke)
-    })
-    this.setData({
-      markers: [{
-        iconPath: "/images/marker.png",
+    let that = this;
+    let old = this.data.markers
+    this.api.getLocation(function (val) {
+      old.push({
         id: 0,
-        latitude: that.data.latitude,
-        longitude: that.data.latitude,
+        latitude: val.latitude,
+        longitude: val.longitude,
         width: 50,
-        height: 50
-      }]
+        height: 50,
+        name:that.data.name,
+        des:that.data.des,
+        imgList:that.data.imgList
+      })
+      that.setData({
+        markers: old
+      });
+      wx.setStorageSync('markes', that.data.markers)
     })
-    console.log(that.data.markes)
-    wx.setStorageSync('markes', that.data.markes)
+    
+  },
+  // 动态的添加markers
+  addMarkers: function () {
+    let old = this.data.markers
+    this.getLocation(function(val){
+
+    })
+    old.push({
+      id: 0,
+      latitude: 23.099994,
+      longitude: 113.337520 + num,
+      width: 50,
+      height: 50
+    })
+    // console.log(old)
+    this.setData({
+      markers: old
+    })
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    
-  },
-  onReady: function () {
-    that = this;
-    //var value = wx.getStorageSync('key')
-    that.setData({
-      markes: wx.getStorageSync('markes')
-    })
-    var markers = []
-    for (let i = 0; i < that.data.markes.length; i++) {
-      markers.push({
-        iconPath: "/images/marker.png",
-        id: i,
-        latitude: that.data.markes[i].latitude,
-        longitude: that.data.markes[i].longitude,
-        width: 50,
-        height: 50
+    console.log(wx.getStorageSync('markes'))
+    if (wx.getStorageSync('markes')==''){
+      this.setData({
+        markers:[]
+      })
+    }else{
+      this.setData({
+        markers: wx.getStorageSync('markes')
       })
     }
-    that.setData({
+  },
+  intoMap(e){
+    console.log(e.currentTarget.dataset.index)
+    console.log(this.data.markers[e.currentTarget.dataset.index])
+    let location = this.data.markers[e.currentTarget.dataset.index]
+    let markers = this.data.markers;
+    markers[e.currentTarget.dataset.index].iconPath= "/images/marker.png",
+    this.setData({
+      location: location,
+      curNav:'map',
       markers: markers
-    })
-    console.log(that.data.markers)
+    });
+  },
+  onReady: function () {
     this.api = this.selectComponent("#api");
     this.api.getAppInfo(this, ['ClientHeight', 'CustomBar','location'],function(val){
       console.log(val)

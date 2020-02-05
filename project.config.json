@@ -23,9 +23,9 @@
 		}
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.9.4",
-	"appid": "wx98a93887912c7a82",
-	"projectname": "applet_%20template",
+	"libVersion": "2.3.0",
+	"appid": "wx431f23cd6d3cccd7",
+	"projectname": "-",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},
