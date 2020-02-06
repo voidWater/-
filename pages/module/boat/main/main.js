@@ -18,6 +18,7 @@ Page({
     })
   },
   marking(val){
+    
     this.setData({
       addshow: true
     })
@@ -34,7 +35,7 @@ Page({
   },
   chooseImage(){
     wx.chooseImage({
-      count: 3, 
+      count: 1, 
       sizeType: ['compressed'], //可以指定是原图还是压缩图，默认二者都有
       success: (res) => {
         if (this.data.imgList.length != 0) {
@@ -67,22 +68,35 @@ Page({
     })
     let that = this;
     let old = this.data.markers
-    this.api.getLocation(function (val) {
-      old.push({
-        id: 0,
-        latitude: val.latitude,
-        longitude: val.longitude,
-        width: 50,
-        height: 50,
-        name:that.data.name,
-        des:that.data.des,
-        imgList:that.data.imgList
+    this.api.uploadImgToTsy(that.data.imgList[0],function(val){
+      let imglist = that.data.imgList;
+      imglist[0] = val;
+      console.log(imglist[0])
+      that.api.getLocation(function (val) {
+        that.api.httpPost("boat/createMarker?openId=" + that.data.openId, {
+          latitude: val.latitude,
+          longitude: val.longitude,
+          name: that.data.name,
+          des: that.data.des,
+          imglist: JSON.stringify(imglist)
+        }, function (res) {
+          that.api.httpGet("boat/getMarkers?openId=" + that.data.openId, function (res) {
+            let list = []
+            res.content.list.forEach(function (item, index) {
+              item.id = index;
+              item.width = 30;
+              item.height = 30;
+              item.imglist = JSON.parse(item.imglist)
+              list.push(item)
+            })
+            that.setData({
+              markers: list
+            })
+          });
+        })
       })
-      that.setData({
-        markers: old
-      });
-      wx.setStorageSync('markes', that.data.markers)
     })
+    
     
   },
   // 动态的添加markers
@@ -103,6 +117,49 @@ Page({
       markers: old
     })
   },
+  intoMap(e) {
+    console.log(e.currentTarget.dataset.index)
+    console.log(this.data.markers[e.currentTarget.dataset.index])
+    let location = this.data.markers[e.currentTarget.dataset.index]
+    let markers = this.data.markers;
+    markers[e.currentTarget.dataset.index].iconPath = "/images/marker.png",
+    markers[e.currentTarget.dataset.index].width = 50;
+    markers[e.currentTarget.dataset.index].height = 50;
+    this.setData({
+      location: location,
+      curNav: 'map',
+      markers: markers
+    });
+  },
+  // ListTouch触摸开始
+  ListTouchStart(e) {
+    this.setData({
+      ListTouchStart: e.touches[0].pageX
+    })
+  },
+
+  // ListTouch计算方向
+  ListTouchMove(e) {
+    this.setData({
+      ListTouchDirection: e.touches[0].pageX - this.data.ListTouchStart > 0 ? 'right' : 'left'
+    })
+  },
+
+  // ListTouch计算滚动
+  ListTouchEnd(e) {
+    if (this.data.ListTouchDirection == 'left') {
+      this.setData({
+        modalName: e.currentTarget.dataset.target
+      })
+    } else {
+      this.setData({
+        modalName: null
+      })
+    }
+    this.setData({
+      ListTouchDirection: null
+    })
+  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -118,23 +175,45 @@ Page({
       })
     }
   },
-  intoMap(e){
-    console.log(e.currentTarget.dataset.index)
-    console.log(this.data.markers[e.currentTarget.dataset.index])
-    let location = this.data.markers[e.currentTarget.dataset.index]
-    let markers = this.data.markers;
-    markers[e.currentTarget.dataset.index].iconPath= "/images/marker.png",
-    this.setData({
-      location: location,
-      curNav:'map',
-      markers: markers
-    });
-  },
   onReady: function () {
+    var that = this;
     this.api = this.selectComponent("#api");
     this.api.getAppInfo(this, ['ClientHeight', 'CustomBar','location'],function(val){
-      console.log(val)
+      
     });
+    that.api.wxGetOpenId('boat', function (val) {
+      if (val != '失败') {
+        console.log(val)
+        that.api.getAppInfo(that, ['openId'], function (val) {
+          that.api.httpGet("boat/getMarkers?openId=" + that.data.openId,function(res){
+              let list = []
+              res.content.list.forEach(function(item,index){
+                item.id=index;
+                item.iconPath="/images/lo.png"
+                item.width=30;
+                item.height = 30;
+                item.imglist = JSON.parse(item.imglist)
+                item.callout= {
+                  content: "语言：珊珊是不是傻  预计到达时间：10分钟 ",
+                   color: "#ff0000",
+                     fontSize: "16",
+                      borderRadius: "10",
+                         bgColor: "#ffffff",
+                           padding: "5",
+                             display: "ALWAYS"
+                 }
+                list.push(item)
+              })
+              that.setData({
+                markers:list
+              })
+          });
+        });
+      } else {
+        console.log("获取用户信息失败")
+      }
+    });
+    
   },
   regionchange(e) {
     console.log(e.type)

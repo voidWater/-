@@ -42,7 +42,7 @@
                   <text class="cuIcon-close"></text>
                 </view>
               </view>
-              <view class="solids" bindtap="chooseImage" wx:if="{{imgList.length<3}}">
+              <view class="solids" bindtap="chooseImage" wx:if="{{imgList.length<1}}">
                 <text class="cuIcon-cameraadd"></text>
               </view>
             </view>
@@ -66,7 +66,7 @@
 <view wx:else>
 <view class="cu-list menu-avatar">
     <view class="cu-item {{modalName=='move-box-'+ index?'move-cur':''}}" wx:for="{{markers}}" wx:key bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd" data-target="move-box-{{index}}">
-      <view class="cu-avatar round lg" style="background-image:url({{item.imgList[0]}});"></view>
+      <view class="cu-avatar round lg" style="background-image:url({{item.imglist[0]}});"></view>
       <view class="content">
         <view class="text-grey">{{item.name}}</view>
         <view class="text-gray text-sm">
@@ -80,7 +80,7 @@
         <view class="bg-red">删除</view>
       </view>
     </view>
-  </view>
+</view>
 </view>
 
 

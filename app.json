@@ -1,5 +1,6 @@
 {
   "pages": [
+    
     "pages/module/boat/main/main",
     "pages/module/lotte/index",
     "pages/index/index",
@@ -7,6 +8,7 @@
     "pages/module/lotte/create",
     "pages/module/lotte/lotte",
     "pages/start/startPage"
+    
     
   ],
   "window": {

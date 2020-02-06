@@ -9,6 +9,9 @@ const app = getApp();
  * 获取用户信息:           getUserInfo(fn)
  * 获取用户小程序openId:   getOpenId(fn) 
  * 
+ * 获取用户信息并          wxGetOpenIdAndUserInfo(fn)
+ * 携带openId 
+ * 
  * 获取当前定位:           getLocation(fn)
  * 
  * 获取本地或拍摄图片       getLocalImage(fn) param [res:图片地址]
@@ -20,6 +23,7 @@ const app = getApp();
  *                        ClientHeight:手机高度
  *                        location:当前位置
  * 
+ * 轻提示：                toast(message)
  */
 Component({
   /**
@@ -110,6 +114,46 @@ Component({
         type: 'gcj02',
         success: (res) => {
           fn(res);
+        }
+      })
+    },
+    wxGetOpenId(type, fn) {
+      var that = this;
+      wx.login({
+        success(res) {
+          if (res.code) {
+            that.httpGet(type + "/getOpenId?code=" + res.code, function (res) {
+              app.globalData.openId = res.openid;
+              app.globalData.session_key = res.session_key;
+              fn(res.openid)
+            });
+          } else {
+            console.log('登录失败！' + res.errMsg)
+            fn("失败");
+          }
+        }
+      })
+    },
+    wxGetOpenIdAndUserInfo(type,fn){
+      var that = this;
+      wx.login({
+        success(res) {
+          if (res.code) {
+            that.httpGet(type+"/getOpenId?code=" + res.code, function (res) {
+              app.globalData.openId = res.openid;
+              app.globalData.session_key = res.session_key;
+              wx.getUserInfo({
+                success: res => {
+                  res.userInfo.openId = app.globalData.openId
+                  app.globalData.userInfo = res.userInfo
+                  fn("成功");
+                }
+              })
+            });
+          } else {
+            console.log('登录失败！' + res.errMsg)
+            fn("失败");
+          }
         }
       })
     },
@@ -254,7 +298,7 @@ Component({
         name: 'file',
         formData: {
           bucket: app.globalData.UpfileServer.bucket,
-          path: '/lotte/',
+          path: '/boat/',
           secret_key: app.globalData.UpfileServer.secret_key
         },
         success: function (res) {

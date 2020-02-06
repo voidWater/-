@@ -31,7 +31,7 @@
       </van-transition>
       <van-transition name="fade" show="{{ register }}" custom-class="block">
         <view class="padding flex flex-direction margin">
-            <button class="cu-btn bg-green lg" bindtap="register"><text class="cuIcon-weixin lg"></text>使用微信登陆</button>
+            <button class="cu-btn bg-green lg"  open-type='getUserInfo' data-flag='login' bindgetuserinfo="register"><text class="cuIcon-weixin lg"></text>使用微信登陆</button>
         </view>
       </van-transition>
       

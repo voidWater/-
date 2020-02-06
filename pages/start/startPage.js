@@ -78,19 +78,30 @@ Page({
     }, 1000 * sec);
   },
   register(){
-    this.setData({
-      loadProgress: this.data.loadProgress + 3
-    })
-    if (this.data.loadProgress < 100) {
-      setTimeout(() => {
-        this.register();
-      }, 100)
-    } else {
-      this.setData({
-        loadProgress: 0
-      })
-      that.api.navTo('/pages/module/lotte/index',null)
-    }
+    that.api.wxGetOpenIdAndUserInfo('boat',function(val){
+       if(val=='成功'){
+         that.api.getAppInfo(that,['openId','userInfo'],function(val){
+           if (val =='success get:userInfo'){
+             console.log(that.data.userInfo);
+           }
+         })
+       }else{
+         console.log("获取用户信息失败")
+       }
+     });
+    // this.setData({
+    //   loadProgress: this.data.loadProgress + 3
+    // })
+    // if (this.data.loadProgress < 100) {
+    //   setTimeout(() => {
+    //     this.register();
+    //   }, 100)
+    // } else {
+    //   this.setData({
+    //     loadProgress: 0
+    //   })
+    //   that.api.navTo('/pages/module/lotte/index',null)
+    // }
   },
   /**
    * 生命周期函数--监听页面显示

@@ -54,7 +54,7 @@ App({
     userInfo: null,
     //wxUrl: 'wss://127.0.0.1:444/websocket',
     //serverUrl: 'http://localhost:8089/',
-    wxUrl:'wss://fullmusic.club/websocket',
+    //wxUrl:'wss://fullmusic.club/websocket',
     serverUrl: 'https://fullmusic.club/wxcj/',
     websocket:'',
     UpfileServer:{
